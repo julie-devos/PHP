@@ -1,20 +1,43 @@
 <?php
-header('content-type: text/css');
-function my_merge_image ($first_img_path, $second_img_path){
-  //img size by defaut
-  $width = 1024;
-  $height = 512;
+//size: 256x256
+function my_merge_image(...$images){ // ... transforme en tableau tous mes paramètres entrés ; (param variables)
+    $width_backg = 2600; //=1000px
+    $height_backg = 1200;
 
-  //Create new img from file with true color
-  $first_img_path = imagecreatefrompng($first_img_path);
-  $im = imagecreatetruecolor($width, $height);
+// création d'une nouvelle image couleur (crée l'image vide pour la fusion) :
+    $img = imagecreatetruecolor($width_backg, $height_backg);
 
-  // copy and resize part of an img from the path and "paste" them side by side
-  imagecopyresampled($im, $first_img_path, 0, 0, 0, 0, 1024, 1024, 1024, 1024);
-  $second_img_path = imagecreatefrompng($second_img_path);
-  imagecopyresampled($im, $second_img_path, 512, 0, 0, 0, 1024, 1024, 1024, 1024);
+    // allouer les couleurs à l'image (255=white + 0 à 127 transparence).
+    $background = imagecolorallocatealpha($img, 255, 255, 255, 127);
+    imagefill($img, 0, 0, $background);
+    imagealphablending($img, false);
+    imagesavealpha($img, true);
 
-  //save png img from the given img ($im)
-  //imagepng($im, "final_img.png");
+
+    $files = $images;
+// met les images du tableau "$images".
+    foreach ($files as $img_path){
+//  list($x, $y) = getimagesize($img_path);
+        $image = imagecreatefrompng($img_path);
+    }
+
+    foreach ($files as $key => $image){
+        static $pos;
+        $image_obj = imagecreatefrompng($image);
+
+        if (imagesx($image_obj) && (imagesy($image_obj))>=260) {
+
+            imagecopyresized($img, $image_obj, $pos,0, 0, 0, 256, 256, $width_backg, $height_backg);
+        } else {
+            imagecopy($img, $image_obj, $pos, 0, 0, 0, 256, 256);
+        }
+// j'impose une marge :
+        $pos+=imagesx($image_obj)+20;
+    }
+
+// affichage du sprite :
+    imagepng($img, "ff_img.png");
 }
+
+my_merge_image("1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png");
 ?>

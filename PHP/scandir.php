@@ -6,7 +6,7 @@
 
     while (false !== ($entry = readdir($handle))) {
 
-        if ($entry != "." && $entry != ".." && $entry != ".png") {
+        if ($entry != "." && $entry != "..") {
 
             echo "$entry\n";
         }
