@@ -1,43 +1,45 @@
 <?php
 //size: 256x256
-function my_merge_image(...$images){ // ... transforme en tableau tous mes paramètres entrés ; (param variables)
-    $width_backg = 2600; //=1000px
-    $height_backg = 1200;
+function my_merge_image (...$images){ // ... transforme en tableau tous mes paramètres entrés ; (arguments variables)
+  $width_backg = 2000;
+  $height_backg = 1300;
+// création d'une nouvelle image couleur (crée l'image vide pour le sprite) :
+  $img = imagecreatetruecolor($width_backg, $height_backg);
 
-// création d'une nouvelle image couleur (crée l'image vide pour la fusion) :
-    $img = imagecreatetruecolor($width_backg, $height_backg);
-
-    // allouer les couleurs à l'image (255=white + 0 à 127 transparence).
-    $background = imagecolorallocatealpha($img, 255, 255, 255, 127);
-    imagefill($img, 0, 0, $background);
-    imagealphablending($img, false);
-    imagesavealpha($img, true);
+  // allouer les couleurs à mon background sprite (255=white + 0 à 127 transparence).
+  $background = imagecolorallocatealpha($img, 255, 255, 255, 127);
+  imagefill($img, 0, 0, $background); //effectue un remplissage du fond, avec la couleur $background
+  imagesavealpha($img, true); //active la transparence
 
 
-    $files = $images;
-// met les images du tableau "$images".
-    foreach ($files as $img_path){
-//  list($x, $y) = getimagesize($img_path);
-        $image = imagecreatefrompng($img_path);
-    }
-
-    foreach ($files as $key => $image){
-        static $pos;
-        $image_obj = imagecreatefrompng($image);
-
-        if (imagesx($image_obj) && (imagesy($image_obj))>=260) {
-
-            imagecopyresized($img, $image_obj, $pos,0, 0, 0, 256, 256, $width_backg, $height_backg);
-        } else {
-            imagecopy($img, $image_obj, $pos, 0, 0, 0, 256, 256);
-        }
-// j'impose une marge :
-        $pos+=imagesx($image_obj)+20;
-    }
-
-// affichage du sprite :
-    imagepng($img, "ff_img.png");
+$files = $images;
+// je mets $images dans une nouvelle variable pour la passer en tableau :
+foreach ($files as $img_path) {
+  $image = imagecreatefrompng($img_path);
+// $image devient une valeur de tableau pour le sprite
 }
 
-my_merge_image("1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png");
+// Création d'un nouveau foreach pour que les images ne se superposent pas au même endroit
+foreach ($files as $key => $image){
+  // liste width et height pour m'en servir dans ma condition plus tard
+  list($x, $y) = getimagesize($image);
+// Création de la position statique pour le placement en ligne
+static $pos;
+// Création de la var $objet pour en refaire une image du sprite sinon elles disparaissent :
+  $image_obj = imagecreatefrompng($image);
+
+//condition pour mes images trop grandes :
+  if (imagesx($image_obj) && (imagesy($image_obj))>260) {
+    imagecopyresized($img, $image_obj, $pos,0, 0, 0, 256, 256, $x, $y);
+    } else {
+    imagecopy($img, $image_obj, $pos, 0, 0, 0, 256, 256);
+    }
+    // je les place de gauche à droite pour éviter la superposition car size image = 256x256;
+    $pos+=imagesx($image)+256;
+  }
+
+// affichage du sprite :
+imagepng($img, "pacman_img.png");
+}
+my_merge_image("0.png", "1.png", "2.png", "3.png", "4.png", "5.png","6.png");
 ?>
