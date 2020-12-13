@@ -1,8 +1,9 @@
 <?php
 //size: 256x256
+
 function my_merge_image (...$images){ // ... transforme en tableau tous mes paramètres entrés ; (arguments variables)
-  $width_backg = 2000;
-  $height_backg = 1300;
+  $width_backg = 5600;
+  $height_backg = 256;
 // création d'une nouvelle image couleur (crée l'image vide pour le sprite) :
   $img = imagecreatetruecolor($width_backg, $height_backg);
 
@@ -19,23 +20,23 @@ foreach ($files as $img_path) {
 // $image devient une valeur de tableau pour le sprite
 }
 
-// Création d'un nouveau foreach pour que les images ne se superposent pas au même endroit
+// Création d'un foreach
 foreach ($files as $key => $image){
-  // liste width et height pour m'en servir dans ma condition plus tard
+
   list($x, $y) = getimagesize($image);
 // Création de la position statique pour le placement en ligne
 static $pos;
-// Création de la var $objet pour en refaire une image du sprite sinon elles disparaissent :
+// Création de la variable $objet pour en recréer une image:
   $image_obj = imagecreatefrompng($image);
 
-//condition pour mes images trop grandes :
-  if (imagesx($image_obj) && (imagesy($image_obj))>260) {
+//condition pour les images trop grandes :
+  if (imagesx($image_obj) && (imagesy($image_obj))>256) {
     imagecopyresized($img, $image_obj, $pos,0, 0, 0, 256, 256, $x, $y);
     } else {
     imagecopy($img, $image_obj, $pos, 0, 0, 0, 256, 256);
     }
-    // je les place de gauche à droite pour éviter la superposition car size image = 256x256;
-    $pos+=imagesx($image)+256;
+    // je les place de gauche à droite;
+    $pos+=imagesx($image_obj);
   }
 
 // affichage du sprite :
